@@ -7,13 +7,14 @@ import android.view.MenuItem;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 
 public class CalculatorActivity extends ActionBarActivity implements ICalculatorView {
 
-
+    private static final java.lang.String BUNDLE_VIEWMODEL_STATE = "";
     TextView display;
     CalculatorViewModel viewModel;
 
@@ -22,8 +23,9 @@ public class CalculatorActivity extends ActionBarActivity implements ICalculator
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         display = (TextView)findViewById((R.id.display));
+
+        viewModel = new CalculatorViewModel(new CalculatorModel(),this);
 
         display.addTextChangedListener((new TextWatcher() {
             @Override
@@ -40,16 +42,30 @@ public class CalculatorActivity extends ActionBarActivity implements ICalculator
             public void afterTextChanged(Editable s) {
 
             }
-        }));
 
-        viewModel = new CalculatorViewModel(new CalculatorModel(),this);
+        }));
+/*
+        if (savedInstanceState != null)
+            viewModel.setState(savedInstanceState.getString(BUNDLE_VIEWMODEL_STATE));*/
 
     }
 
 
-    public void numberPressed(View view) { viewModel.onNumPressed(); }
+    public void numberPressed(View view) {
 
-    public void operatorPressed(View view) { viewModel.onOperatorPressed(); }
+        Button button = (Button)view;
+        viewModel.onNumPressed(button.getText().charAt(0));
+    }
+
+    public void operatorPressed(View view) {
+        Button button = (Button)view;
+        viewModel.onOperatorPressed(button.getText().charAt(0));
+    }
+
+    public void equalPressed(View view) {
+        viewModel.onEqualPressed();
+    }
+
 
     public void clearPressed(View view) { viewModel.onClearPressed(); }
 
@@ -79,4 +95,20 @@ public class CalculatorActivity extends ActionBarActivity implements ICalculator
     public void printDisplay(String screen) {
         this.display.setText(screen);
     }
+
+    public String readDisplay() {
+        return String.format("%s", this.display.getText());
+    }
+
+    @Override
+
+    public void onSaveInstanceState(Bundle outState){
+
+        super.onSaveInstanceState(outState);
+       // String viewModelState = viewModel.getState();
+       // outState.putString(BUNDLE_VIEWMODEL_STATE, viewModelState);
+    }
 }
+
+
+

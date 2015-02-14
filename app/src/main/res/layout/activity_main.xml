@@ -303,7 +303,7 @@
             android:layout_width="0pt"
             android:layout_weight="1"
             android:text="="
-            android:onClick="operatorPressed"
+            android:onClick="equalPressed"
             android:textColor="#ffffffff"
             android:textSize="35dip"
             android:background="#d23f3f4a"
