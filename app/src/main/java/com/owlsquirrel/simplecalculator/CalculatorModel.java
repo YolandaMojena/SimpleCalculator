@@ -2,6 +2,7 @@ package com.owlsquirrel.simplecalculator;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 /**
  * Created by usuario on 05/02/2015.
@@ -19,12 +20,14 @@ public class CalculatorModel implements ICalculatorModel{
     private String lastNum = "0";
     private Boolean pointPressed = false;
     private Boolean equal = false;
+    private String memory;
 
 
     @Override
     public String operate(BigDecimal number1, char operator, BigDecimal number2) {
 
         BigDecimal result = number1;
+        result.setScale(7, BigDecimal.ROUND_HALF_UP);
 
         if(number1 != null && number2 != null)
         {
@@ -38,7 +41,8 @@ public class CalculatorModel implements ICalculatorModel{
                     result = number1.subtract(number2);
                     break;
                 case '*':
-                    result = number1.multiply(number2);
+                    //result = number1.multiply(number2);
+                    result = number1.multiply(number2, new MathContext(7));
                     break;
 
                 case '/':
@@ -48,7 +52,7 @@ public class CalculatorModel implements ICalculatorModel{
                     }
                     else
                     {
-                        result = number1.divide(number2);
+                        result = number1.divide(number2, 7, RoundingMode.HALF_UP);
                         break;
                     }
 
@@ -57,12 +61,16 @@ public class CalculatorModel implements ICalculatorModel{
                     return "Error";
             }
         }
-        else return result.toString();
+        else {
+            //result = result.setScale(8, BigDecimal.ROUND_HALF_UP);
+            return result.toString();
+        }
 
         if (result.compareTo(new BigDecimal(99999999)) == 1 || result.compareTo(new BigDecimal(-99999999)) == -1){
             inputClear();
             return "Error";
         }
+        //result = result.setScale(8, BigDecimal.ROUND_HALF_UP);
         return result.toString();
     }
 
@@ -73,7 +81,7 @@ public class CalculatorModel implements ICalculatorModel{
             num2 = null;
             num1 = cleanNum(num1);
         }
-        else if (num1 == null || num1 == "Error"){
+        else if (num1 == null || num1.equals("Error")){
             num1 = "0";
         }
         else num1 = cleanNum(num1);
@@ -95,7 +103,7 @@ public class CalculatorModel implements ICalculatorModel{
 
         if (value == '.' && !pointPressed){
             pointPressed = true;
-            if (num1 == null || num1 == "Error") {
+            if (num1 == null || num1.equals("Error")) {
                 num1 = String.format("0%s", value);
                 lastNum = num1;
                 return num1;
@@ -117,7 +125,7 @@ public class CalculatorModel implements ICalculatorModel{
             }
         }
         else if (value != '.') {
-            if (num1 == null || num1 == "Error") {
+            if (num1 == null || num1.equals("Error")) {
                 if (value == '0')
                 {
                     lastNum = "0";
@@ -159,13 +167,13 @@ public class CalculatorModel implements ICalculatorModel{
     public String inputEqual()
     {
         if(equal) {
-            if (num1 == null || num1 == "Error") return "0";
+            if (num1 == null || num1.equals("Error")) return "0";
             if(lastOperator != 'n') num1 = operate(new BigDecimal(num1), lastOperator, new BigDecimal(lastNum));
             else return num1;
         }
         else{
             equal = true;
-            if (num1 == null || num1 == "Error") return "0";
+            if (num1 == null || num1.equals("Error")) return "0";
             num1 = cleanNum(num1);
             if (num2 == null) {
                 currentOperator='n';
@@ -209,25 +217,58 @@ public class CalculatorModel implements ICalculatorModel{
 
 
     private String cleanNum(String num){
-        int i;
-        Boolean exit = true;
-        for (i = 0; i < num.length()-1; i++){
-            if (num.charAt(i) == '.'){
-                exit = false;
-                break;
+        if (!num.equals("Error")) {
+            int i;
+            Boolean E = false;
+            for (i = 0; i < num.length() - 1; i++) {
+                if (num.charAt(i) == 'E') {
+                    E = true;
+                    break;
+                }
             }
-        }
-        if (exit) return num;
+            if (E) {
+                if (num.charAt(0) == '-') num = "-0.000000" + num.charAt(1);
+                else num = "0.000000" + num.charAt(0);
+            }
+            Boolean exit = true;
+            for (i = 0; i < num.length() - 1; i++) {
+                if (num.charAt(i) == '.') {
+                    exit = false;
+                    break;
+                }
+            }
+            if (exit) return num;
 
-        for (i = num.length()-1; i > 0; i--){
-            if (num.endsWith("0")) num = num.substring(0,num.length()-1);
-            else if (num.endsWith(".")){
-                num = num.substring(0,num.length()-1);
-                break;
+            for (i = num.length() - 1; i > 0; i--) {
+                if (num.endsWith("0")) num = num.substring(0, num.length() - 1);
+                else if (num.endsWith(".")) {
+                    num = num.substring(0, num.length() - 1);
+                    break;
+                } else break;
             }
-            else break;
         }
         return num;
     }
 
+    public void inputMC(){
+        memory = null;
+        inputClear();
+    }
+    public String inputMR(){
+        if (currentOperator == 'n') num1 = memory;
+        else num2 = memory;
+        return memory;
+    }
+    public String inputMA(){
+        String result = inputEqual();
+        if (memory == null) memory = "0";
+        memory = operate(new BigDecimal(memory), '+', new BigDecimal(result));
+        return result;
+    }
+    public String inputMS(){
+        String result = inputEqual();
+        if (memory == null) memory = "0";
+        memory = operate(new BigDecimal(memory), '-', new BigDecimal(result));
+        return result;
+    }
 }

@@ -16,5 +16,10 @@ public interface ICalculatorModel {
     String inputOperation(char operator);
     String inputEqual();
     void inputClear();
+
+    void inputMC();
+    String inputMR();
+    String inputMA();
+    String inputMS();
 }
 

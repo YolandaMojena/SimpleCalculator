@@ -38,4 +38,19 @@ public class CalculatorViewModel {
         //model.setState();
     }
 
+
+
+    public void onMCPressed(){
+        model.inputMC();
+    }
+    public void onMRPressed(){
+        view.printDisplay(model.inputMR());
+    }
+    public void onMAPressed(){
+        view.printDisplay(model.inputMA());
+    }
+    public void onMSPressed(){
+        view.printDisplay(model.inputMS());
+    }
+
 }

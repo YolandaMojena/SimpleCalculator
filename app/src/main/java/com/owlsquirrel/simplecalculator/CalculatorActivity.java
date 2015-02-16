@@ -70,6 +70,12 @@ public class CalculatorActivity extends ActionBarActivity implements ICalculator
     public void clearPressed(View view) { viewModel.onClearPressed(); }
 
 
+    public void MCPressed(View view) { viewModel.onMCPressed(); }
+    public void MRPressed(View view) { viewModel.onMRPressed(); }
+    public void MAPressed(View view) { viewModel.onMAPressed(); }
+    public void MSPressed(View view) { viewModel.onMSPressed(); }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
