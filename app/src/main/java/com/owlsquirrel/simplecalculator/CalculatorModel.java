@@ -168,7 +168,11 @@ public class CalculatorModel implements ICalculatorModel{
     {
         if(equal) {
             if (num1 == null || num1.equals("Error")) return "0";
-            if(lastOperator != 'n') num1 = operate(new BigDecimal(num1), lastOperator, new BigDecimal(lastNum));
+            if (lastOperator != 'n') {
+                lastNum = cleanNum(lastNum);
+                num1 = operate(new BigDecimal(num1), lastOperator, new BigDecimal(lastNum));
+                num1 = cleanNum(num1);
+            }
             else return num1;
         }
         else{
@@ -206,12 +210,43 @@ public class CalculatorModel implements ICalculatorModel{
     @Override
     public String getState()
     {
-        return num1 + "#" + num2 + "#" + currentOperator + "#" + pointPressed + "#" + lastOperator + "#" + lastNum + "#" + equal;
+        return num1 + '#' + num2 + '#' + currentOperator + '#' + pointPressed.toString() + '#' + lastOperator + '#' + lastNum + '#' + equal.toString() + '#' + memory + '#';
     }
 
     @Override
     public void setState(String state)
     {
+        int[] hashIndex = new int[8];
+        int j = 0;
+
+        for(int i=0; i<state.length();i++)
+        {
+            if(state.charAt(i) == '#')
+            {
+                hashIndex[j] = i;
+                j++;
+            }
+        }
+
+        num1 = state.substring(0,hashIndex[0]);
+        if(num1.equals("null")) num1 = null;
+
+        num2 = state.substring(hashIndex[0]+1,hashIndex[1]);
+        if(num2.equals("null")) num2 = null;
+
+        currentOperator = state.charAt(hashIndex[1]+1);
+
+        if(state.substring(hashIndex[2]+1,hashIndex[3]).equals("true")) pointPressed = true;
+        else pointPressed = false;
+
+        lastOperator = state.charAt(hashIndex[3]+1);
+
+        lastNum = state.substring(hashIndex[4]+1,hashIndex[5]);
+
+        if(state.substring(hashIndex[5]+1,hashIndex[6]).equals("true")) equal = true;
+        else equal = false;
+
+        memory = state.substring(hashIndex[6]+1,hashIndex[7]);
 
     }
 
@@ -252,7 +287,6 @@ public class CalculatorModel implements ICalculatorModel{
 
     public void inputMC(){
         memory = null;
-        inputClear();
     }
     public String inputMR(){
         if (currentOperator == 'n') num1 = memory;

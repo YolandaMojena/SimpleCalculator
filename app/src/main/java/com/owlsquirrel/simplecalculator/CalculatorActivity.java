@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 public class CalculatorActivity extends ActionBarActivity implements ICalculatorView {
 
-    private static final java.lang.String BUNDLE_VIEWMODEL_STATE = "";
+    private static final java.lang.String BUNDLE_VIEWMODEL_STATE = "calculatorState";
     TextView display;
     CalculatorViewModel viewModel;
 
@@ -44,9 +44,9 @@ public class CalculatorActivity extends ActionBarActivity implements ICalculator
             }
 
         }));
-/*
+
         if (savedInstanceState != null)
-            viewModel.setState(savedInstanceState.getString(BUNDLE_VIEWMODEL_STATE));*/
+            viewModel.setState(savedInstanceState.getString(BUNDLE_VIEWMODEL_STATE));
 
     }
 
@@ -107,12 +107,11 @@ public class CalculatorActivity extends ActionBarActivity implements ICalculator
     }
 
     @Override
-
     public void onSaveInstanceState(Bundle outState){
 
         super.onSaveInstanceState(outState);
-       // String viewModelState = viewModel.getState();
-       // outState.putString(BUNDLE_VIEWMODEL_STATE, viewModelState);
+        String viewModelState = viewModel.getState();
+        outState.putString(BUNDLE_VIEWMODEL_STATE, viewModelState);
     }
 }
 

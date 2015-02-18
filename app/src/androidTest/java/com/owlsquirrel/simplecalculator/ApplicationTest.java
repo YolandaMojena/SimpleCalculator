@@ -20,6 +20,81 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
     //  SPECIFICATION TESTS
 
+    public void test1(){
+        model.inputValue('1');
+        assertEquals("Screen should show 12", "12", model.inputValue('2'));
+    }
+
+    public void test2(){
+        model.inputValue('0');
+        model.inputValue('0');
+        model.inputValue('0');
+        assertEquals("Screen should show 1", "1", model.inputValue('1'));
+    }
+
+    public void test3() {
+        model.inputValue('1');
+        model.inputValue('.');
+        model.inputValue('0');
+        model.inputValue('0');
+        assertEquals("Screen should show 1.000", "1.000", model.inputValue('0'));
+    }
+
+    public void test4() {
+        model.inputValue('1');
+        model.inputValue('.');
+        model.inputValue('0');
+        model.inputValue('0');
+        model.inputValue('0');
+        String result = model.inputEqual();
+        assertEquals("Screen should show 1", "1", result);
+    }
+
+    public void test5() {
+        model.inputValue('1');
+        model.inputValue('2');
+        model.inputOperation('+');
+        model.inputValue('3');
+        model.inputValue('4');
+        String result = model.inputEqual();
+        assertEquals("Screen should show 46", "46", result);
+    }
+
+    public void test6() {
+        model.inputValue('1');
+        model.inputOperation('/');
+        model.inputValue('3');
+        String result = model.inputEqual();
+        assertEquals("Screen should show 0.3333333", "0.3333333", result);
+    }
+
+    public void test7() {
+        model.inputValue('1');
+        model.inputOperation('/');
+        model.inputValue('0');
+        String result = model.inputEqual();
+        assertEquals("Screen should show Error", "Error", result);
+    }
+
+    public void test8() {
+        model.inputValue('1');
+        model.inputOperation('/');
+        model.inputValue('0');
+        model.inputOperation('+');
+        model.inputValue('3');
+        String result = model.inputEqual();
+        assertEquals("Screen should show 3", "3", result);
+    }
+
+    public void test9() {
+        model.inputValue('3');
+        model.inputValue('4');
+        model.inputOperation('+');
+        model.inputValue('2');
+        model.inputValue('3');
+        assertEquals("Screen should show 57", "57", model.inputOperation('/'));
+    }
+
     public void test10() {
         model.inputValue('3');
         model.inputValue('4');
@@ -30,6 +105,53 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         model.inputValue('7');
         String result = model.inputEqual();
         assertEquals("Screen should show 8.1428571", "8.1428571", result);
+    }
+
+    public void test11() {
+        model.inputValue('3');
+        model.inputOperation('+');
+        assertEquals("Screen should show 3", "3", model.inputOperation('*'));
+    }
+
+    public void test12() {
+        model.inputValue('3');
+        model.inputOperation('+');
+        model.inputOperation('*');
+        model.inputValue('5');
+        String result = model.inputEqual();
+        assertEquals("Screen should show 15", "15", result);
+    }
+
+    public void test13() {
+        model.inputValue('1');
+        model.inputValue('2');
+        model.inputValue('3');
+        model.inputValue('4');
+        model.inputValue('5');
+        model.inputValue('6');
+        model.inputValue('7');
+        model.inputValue('8');
+        model.inputValue('9');
+        assertEquals("Screen should show 12345678", "12345678", model.inputValue('0'));
+    }
+
+    public void test14() {
+        model.inputValue('1');
+        model.inputValue('0');
+        model.inputValue('0');
+        model.inputValue('0');
+        model.inputOperation('*');
+        model.inputValue('1');
+        model.inputValue('0');
+        model.inputValue('0');
+        model.inputValue('0');
+        model.inputOperation('*');
+        model.inputValue('1');
+        model.inputValue('0');
+        model.inputValue('0');
+        model.inputValue('0');
+        String result = model.inputEqual();
+        assertEquals("Screen should show Error", "Error", result);
     }
 
 
@@ -78,7 +200,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         model.inputValue('4');
         model.inputValue('5');
         String result = model.inputEqual();
-        assertEquals("Screen should show 45", "45", result);
+        assertEquals("Screen should show 2345", "2345", result);
     }
 
     public void memoryTest5() {
@@ -97,5 +219,27 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
 
     //  CUSTOM TESTS
+
+    public void recoverState () {
+        model.inputValue('1');
+        model.inputOperation('+');
+        model.inputValue('4');
+        model.inputValue('.');
+        model.inputValue('3');
+
+        String result = model.getState();
+        String state = "1#4.3#+#true#+#4.3#false#";
+        assertEquals(state, result);
+    }
+
+    public void clearModel (){
+        model.inputValue('1');
+        model.inputOperation('+');
+        model.inputValue('4');
+        model.inputClear();
+
+        String result = model.inputEqual();
+        assertEquals("0", result);
+    }
 }
 

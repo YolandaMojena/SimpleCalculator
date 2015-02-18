@@ -38,6 +38,18 @@ public class CalculatorViewModel {
         //model.setState();
     }
 
+    public String getState()
+    {
+        return view.readDisplay()+ '#' + model.getState();
+    }
+
+    public void setState(String state)
+    {
+        int hashIndex = state.indexOf('#');
+        view.printDisplay(state.substring(0,hashIndex));
+        model.setState(state.substring(hashIndex+1));
+    }
+
 
 
     public void onMCPressed(){
